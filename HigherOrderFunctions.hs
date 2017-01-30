@@ -64,3 +64,51 @@ chainsWithLen2 n lower
   | n <= 1    = error "Cannot be <= 1"
   | otherwise = length (filter isLongEnough (map chain [1..n])) 
   where isLongEnough xs = length xs > lower
+
+-- A partially applied map function that maps an array of 
+-- numbers to functions that * an input by the numbers.
+-- Partially applied map function that's passed a partially
+-- applied * function.
+
+mapList :: Num a => [a] -> [a -> a]
+mapList = map (*)
+
+-- Lambdas! 
+
+numLongChains :: Int
+numLongChains = length (filter (\xs -> length xs > 15) (map chain [1..100]))
+
+-- You can pattern match in lambdas 
+
+mapAdd :: Num a => [(a, a)] -> [a]
+mapAdd = map (\(x,y) -> x + y)
+
+-- Using foldl to reduce a value from a list
+
+sum' :: Num a => [a] -> a
+sum' = foldl (+) 0 -- (\acc x -> acc + x) 0 xs
+
+elem' :: Eq a => a -> [a] -> Bool
+elem' y = foldl (\acc x -> acc || x == y) False
+
+-- ++ is expensive, so best to use right folds when building 
+-- up new lists from a list.
+-- Right holds also work on infinite lists whereas left folds 
+-- dont.
+
+map2' :: (a -> b) -> [a] -> [b]
+map2' f = foldr ((:) . f) []
+
+sum2' :: Num a => [a] -> a
+sum2' = foldl1 (+)
+
+reverse2' :: [a] -> [a]
+reverse2' = foldl (flip (:)) []
+
+-- How many elements does it take for the sum of the roots of 
+-- all natural numbers to exceed n?
+
+sqrtSums :: Double -> Int
+sqrtSums n = length (takeWhile (<= n) (scanl1 (+) (map sqrt [1..]))) + 1
+
+fn = ceiling . negate . tan . cos . max 50 -- x = ceiling (negate (tan (cos (max 50 x))))
