@@ -15,3 +15,6 @@
   - `sum (replicate 5 (max 6.7. 8.9))` vs `sum . replicate 5 . max 6.7 $ 8.9`
   - `replicate 100 (product (map (*3) (zipWith max [1,2,3,4,5] [4,5,1,7,8])))` vs `replicate 100 . product . map (*3) . zipWith max [1,2,3,4,5] $ [4,5,1,7,8]` 
 - Omitting a parameter because of currying in a function definition is called 'point free style'. E.g `sum xs = foldl (+) 0 xs` vs `sum = foldl (+) 0`
+- Searching for functions, etc:
+  - [Hoogle](https://www.haskell.org/hoogle/)
+  - [HHL](https://downloads.haskell.org/~ghc/latest/docs/html/libraries/)
