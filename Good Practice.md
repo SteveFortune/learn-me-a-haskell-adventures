@@ -17,3 +17,4 @@
       belowLimit = takeWhile (<10000) oddSquares 
   in sum belowLimit
 ```
+- Use `foldl'` and `foldl1'` on big lists to avoid stack overflows - they are non-lazy, which means that they actually compute the accumulator value as they churn through the list, whereas their lazy counterparts use 'thunks' to defer computing the value until its required, which will fill up the stack.

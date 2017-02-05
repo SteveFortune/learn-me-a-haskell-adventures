@@ -17,5 +17,16 @@ spaceMe :: [String] -> String
 spaceMe = intercalate " "
 
 -- transpose 
+-- concat
+-- and, or
+-- any, all
+-- iterate
+-- takeWhile, dropWhile 
 
+dateStockExceeded :: (Floating a, Ord a) => [(a, Int, Int, Int)] -> a -> (Int, Int, Int)
+dateStockExceeded [] _ = error "Never"
+dateStockExceeded stocks n = (year, month, day)
+  where (_, year, month, day) = head $ dropWhile (\(val, _, _, _) -> val > n) stocks
 
+splitByFirstSpace :: String -> (String, String)
+splitByFirstSpace = span (/= ' ')
