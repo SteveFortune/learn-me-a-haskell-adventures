@@ -18,3 +18,7 @@
 - Searching for functions, etc:
   - [Hoogle](https://www.haskell.org/hoogle/)
   - [HHL](https://downloads.haskell.org/~ghc/latest/docs/html/libraries/)
+- `Maybe a` can either be `Nothing` or `Just a`. Its like a special kind of list that can only hold either 1 value or nothing; `elemIndex` returns a `Maybe Int` because the element you pass it may or may not exist in the list in question, whereas `elemIndices` returns a `[Int]`, which will be empty if the element is never found.
+- `[1..10] \\ [1,3,5]` is equivalent to `delete 1 . delete 3 . delete 5 $ [1..10]`
+- For list functions that take `Int` and return `Int` where it would have been more convenient to deal in `Num`, you can use their `generic*` counterparts. 
+- There are also functions like `nubBy, deleteBy, unionBy`, etc which take an equality function rather than expect lists of elements that conform to `Eq`.
