@@ -1,7 +1,10 @@
-import Data.List (nub, sort, intersperse, intercalate, group, sort, tails, find)
+import Data.List (nub, sort, intersperse, intercalate, group, sort, tails, find, groupBy, sortBy)
 -- import Data.List hiding (nub)
 import qualified Data.Map as M
+import qualified Data.Set as S
 -- M.filter, M.null, etc
+import Data.Function (on)
+import Data.Char
 
 numUniques :: Eq a => [a] -> Int
 numUniques = length . nub
@@ -68,3 +71,63 @@ isInfixOf' needle haystack =
 -- intersect
 -- insert
 -- genericTake, genericDrop, etc
+
+-- Initially, written as:
+--  groupByPve = groupBy (\x y = (x > 0) == (y > 0))
+-- The `on` function applies its first fn parameter to the result 
+-- of its second fn parameter invoked with x and y:
+--  f `on` g = (\x y) -> f (g x) (g y)
+-- Which is an abstraction of `(x > 0) == (y > 0)` 
+groupByPve :: (Ord a, Num a) => [a] -> [[a]]
+groupByPve = groupBy ((==) `on` (> 0))
+
+sortByLen :: [[a]] -> [[a]] 
+sortByLen = sortBy (compare `on` length)
+
+words' :: String -> [String]
+words' = filter (not . any isSpace) . groupBy ((==) `on` isSpace)
+
+upperCaseMe :: String -> String 
+upperCaseMe = unwords . map (\(x:xs) -> (toUpper x):xs) . words
+
+-- I am a composition cowboy
+encode :: Int -> String -> String
+encode shift = map (chr . (+ shift) . ord)
+
+decode :: Int -> String -> String
+decode shift = encode (negate shift)
+
+lookup' :: Eq k => k -> [(k,v)] -> Maybe (k,v) -- Maybe v
+-- lookup' _ [] = Nothing
+-- lookup' key ((k,v):xs) = if key == k then Just v else lookup' key xs
+-- lookup' key = foldr (\(k,v) acc -> if k == key then Just v else acc) Nothing
+lookup' key = find ((== key) . fst)
+
+fromList' :: Ord k => [(k,v)] -> M.Map k v
+fromList' = foldr (\(k,v) acc -> M.insert k v acc) M.empty
+
+keys' :: Ord k => M.Map k v -> [k]
+keys' = map fst . M.toList
+
+elems' :: Ord k => M.Map k v -> [v]
+elems' = map snd . M.toList
+
+numbers = [("betty","555-2938")  
+    ,("betty","342-2492")  
+    ,("bonnie","452-2928")  
+    ,("patsy","493-2928")  
+    ,("patsy","943-2929")  
+    ,("patsy","827-9162")  
+    ,("lucille","205-2928")  
+    ,("wendy","939-8282")  
+    ,("penny","853-2492")  
+    ,("penny","555-2111")  
+    ]
+
+fromListWithBiggest :: (Ord a) => [(a, a)] -> M.Map a a
+fromListWithBiggest = M.fromListWith max
+
+fromListWithPlus :: (Ord k, Num v) => [(k, v)] -> M.Map k v
+fromListWithPlus = M.fromListWith (+)
+
+-- Set.isSubsetOf, Set.isProperSubsetOf

@@ -22,3 +22,6 @@
 - `[1..10] \\ [1,3,5]` is equivalent to `delete 1 . delete 3 . delete 5 $ [1..10]`
 - For list functions that take `Int` and return `Int` where it would have been more convenient to deal in `Num`, you can use their `generic*` counterparts. 
 - There are also functions like `nubBy, deleteBy, unionBy`, etc which take an equality function rather than expect lists of elements that conform to `Eq`.
+- `Data.Char` exports a datatype like `Ordering` but that defines categories that chars fall into: `GeneralCategory`. Use `generalCategory` to determine the category of a char.. e.g `map generalCategory "something"`
+- `Data.Map`'s `fromList` creates a map from an association list. It discards duplicate keys.
+- `Data.Map`'s `Map` type wants its keys to conform to `Ord` so that it can arrange them as a tree. 

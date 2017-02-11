@@ -18,3 +18,8 @@
   in sum belowLimit
 ```
 - Use `foldl'` and `foldl1'` on big lists to avoid stack overflows - they are non-lazy, which means that they actually compute the accumulator value as they churn through the list, whereas their lazy counterparts use 'thunks' to defer computing the value until its required, which will fill up the stack.
+- When dealing with *By* functions which test for equality, you'll usually do `(==) \`on\` ...`; when dealing with *By* functions which test for ordering, you'll usually do `compare \`on\` something`
+- Better to use folds than list recursion because its easier to read.
+- Better to work with `Data.Map` than list association.
+- Sets are ordered because they are implemented as trees - they are faster than maps and lists.
+- Sets are often used to get a list of duplicates from a list by making a list into a set and then converting back again - its faster, but requires elements to be of type `Ord`, whereas `nub` only requires `Eq`.
