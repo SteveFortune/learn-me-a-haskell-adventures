@@ -23,3 +23,9 @@
 - Better to work with `Data.Map` than list association.
 - Sets are ordered because they are implemented as trees - they are faster than maps and lists.
 - Sets are often used to get a list of duplicates from a list by making a list into a set and then converting back again - its faster, but requires elements to be of type `Ord`, whereas `nub` only requires `Eq`.
+- You can hide value constructors by not exporting them from modules and provide auxilliary functions instead. E.g. you can't create a `Data.Map.Map` directly, only with functions like `fromList`. Abstracts away the impl and prevents consumers from pattern matching against them.
+- `Nothing` is polymorphic - having a `Maybe a` means that you can reason about what you might do with an `a` regardless of what type it is.
+- Don't put type constraints in data declarations. Even though it might look like it makes sense, it results in having to include the type constraint in *every* function that handles that type, even when they don'e care about the constraint, e.g.:
+  - If maps were defined as `data (Ord k) => Map k v ...`
+  - A function like `toList`, which doesn't care whether the keys can be ordered of not would have to be `toList :: (Ord k) => Map k v -> [(k, v)]`
+  - Its better practice to specify type constraints when you need them.
