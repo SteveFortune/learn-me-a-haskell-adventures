@@ -6,7 +6,15 @@ module MakingOurOwnTypesAndTypeclasses
   , nudge
   , baseCircle
   , baseRectangle
+  , IntMap
+  , AssocList
+  , Either'
+  , Tree
+  , singleton
+  , treeInsert
   ) where
+
+import qualified Data.Map as Map
 
 -- Bool is a data type that can have 2 values
 -- - `data <data-type>` defines the data type
@@ -54,15 +62,15 @@ baseRectangle w h = Rectangle (Point 0 0) (Point w h)
 --  - Provided those values also conform to `Eq`.
 --  - Works with `Eq, Ord, Enum, etc.`
 data Person = Person { firstName :: String
-                     , lastName :: String
-                     , age :: Int
-                     , height :: Int
-                     , phoneNumber :: String
-                     , flavor :: String
+                   , lastName :: String
+                   , age :: Int
+                   , height :: Int
+                   , phoneNumber :: String
+                   , flavor :: String
                      } deriving (Show, Eq, Read)
 
 data Car = Car { company :: String
-               , modelNo :: Int
+             , modelNo :: Int
                } deriving (Eq, Read, Show)
 
 makeAFord :: (Int) -> Car
@@ -85,3 +93,181 @@ smult :: (Num t) => Vector t -> Vector t -> t
 -- Enum lets you do stuff like `[Mon..Sat]`
 -- Bounded lets you do stuff like `minBound :: Day`
 data Day = Mon | Tues | Weds | Thurs | Fri | Sat | Sun deriving (Show, Read, Eq, Ord, Bounded, Enum)
+
+-- Type synonym
+type String' = [Char]
+type Name = String
+type PhoneNumber = String
+type PhoneBook = [(Name, PhoneNumber)]
+
+inPhoneBook :: Name -> PhoneNumber -> PhoneBook -> Bool
+inPhoneBook name number book = (name, number) `elem` book
+
+-- Type synonyms can be parameterised
+type AssocList k v = [(k,v)]
+-- Partially applied type constructor
+type IntMap = Map.Map Int -- v = Map Int v
+
+data Either' a b = Left' a | Right' b deriving (Eq, Ord, Read, Show)
+
+data LockerState = Taken | Free deriving (Show, Eq)
+type Code = String
+type LockerMap = Map.Map Int (LockerState, Code)
+
+lockerLookup :: Int -> LockerMap -> Either String Code
+lockerLookup num lockers =
+  case Map.lookup num lockers of
+    Nothing -> Left $ "Locker number " ++ show num ++ " does not exist."
+    Just (Taken, code) -> Left $ "Locker number " ++ show num ++ " is already taken."
+    Just (Free, code) -> Right code
+
+lockers :: LockerMap
+lockers = Map.fromList
+  [(100,(Taken,"ZD39I"))
+  ,(101,(Free,"JAH3I"))
+  ,(103,(Free,"IQSA9"))
+  ,(105,(Free,"QOTSA"))
+  ,(109,(Taken,"893JJ"))
+  ,(110,(Taken,"99292"))
+  ]
+
+-- Recursive data structure
+-- data List a = Empty | Cons { listHead :: a, listTail :: List a } deriving (Show, Read, Eq, Ord)
+-- Infix declaration defines how tightly it binds and whether its left or right
+-- associative.
+infixr 5 :-:
+data List a = Empty | a :-: (List a) deriving (Show, Read, Eq, Ord)
+
+infixr 5 .++
+(.++) :: List a -> List a -> List a
+Empty .++ ys = ys
+-- Pattern matching actually matches against constructors!
+(x :-: xs) .++ ys = x :-: (xs .++ ys)
+
+data Tree a = EmptyTree | Node a (Tree a) (Tree a) deriving (Show, Read, Eq)
+
+singleton :: a -> Tree a
+singleton a = Node a EmptyTree EmptyTree
+
+treeInsert :: (Ord a) => a -> Tree a -> Tree a
+treeInsert x EmptyTree = singleton x
+treeInsert x tree@(Node y left right)
+  | x == y  = tree
+  | x < y   = Node y (treeInsert x left) right
+  | x > y   = Node y left (treeInsert x right)
+
+treeElm :: (Ord a) => a -> Tree a -> Bool
+treeElm _ EmptyTree = False
+treeElm x (Node y left right)
+  | x == y  = True
+  | x < y   = treeElm x left
+  | x > y   = treeElm x right
+
+treeFromList :: (Ord a) => [a] -> Tree a
+treeFromList = foldr treeInsert EmptyTree
+
+class Equals a where
+  -- These are the type delcarations of the functions which Eq
+  -- instances must conform to
+  (.==) :: a -> a -> Bool
+  (./=) :: a -> a -> Bool
+  -- These are the implementations - not mandatory. They are defined
+  -- in terms of mutual recursion, so that instances don't have to
+  -- implement all variations themselves
+  a .== b = not (a ./= b)
+  a ./= b = not (a .== b)
+
+data TrafficLight = Red | Yellow | Green
+
+-- Because we defined the functions of Equals in terms of mutual
+-- recursion earlier, we only have to specify the difference
+-- instances of == that result in True to satisfy the minimal complete
+-- definition (the minimum functions that should be implemented so
+-- that the type behaves as advertised).
+instance Equals TrafficLight where
+  Red .== Red = True
+  Green .== Green = True
+  Yellow .== Yellow = True
+  _ .== _ = False
+
+instance Show TrafficLight where
+  -- Pattern matching used to specify different implementations of
+  -- Show for TrafficLight
+  show Red = "A red traffic light"
+  show Green = "A green traffic light"
+  show Yellow = "Speed up!!"
+
+-- Subclassing is just placing class constraints on class declarations:
+--  class (Eq a) => Num a where ...
+
+-- Eq implementation for type constructors - type variable m is
+-- used to denote the type, its like pattern matching on type
+-- constructors with type variables
+-- We also need to add the Eq class constraint to the m variable
+-- so that we can compare it!
+instance Eq m => Eq (Maybe' m) where
+  Just' x == Just' y = x == y
+  Nothing' == Nothing' = True
+  _ == _ = False
+
+-- Class for types that can act as a Bool, e.g. can be truthy
+-- or falsy
+class Booly a where
+  b :: a -> Bool
+
+instance Booly Int where
+  b 0 = False
+  b _ = True
+
+instance Booly [a] where
+  b [] = False
+  b _  = True
+
+instance Booly Bool where
+  -- `id` is a standard library function which takes a value and
+  -- returns it.
+  b = id
+
+instance Booly (Maybe a) where
+  b (Just _)  = True
+  b Nothing   = False
+
+-- Our tree is truthy if and only if there exists some element in
+-- the tree which is truthy
+instance Booly a => Booly (Tree a) where
+  b EmptyTree = False
+  b (Node x left right) = b x || b left || b right
+
+instance Booly TrafficLight where
+  b Red = False
+  b _ = True
+
+ifTruthy :: Booly a => a -> b -> b -> b
+ifTruthy truthyVal trueBranch falseBranch = if b truthyVal then trueBranch else falseBranch
+
+-- Redefinition of the Functor typeclass. A functor is applied
+-- to a type constructor and maps one object of a concrete type
+-- of that constructor to another object of another conrete type
+-- of that constructor, e.g.:
+-- - Mapping a [Char] to [Int]
+-- - Mapping a Maybe Char to Maybe Int
+-- - etc
+-- It expects a type constructor with one type parameter, so stuff
+-- like Either is out.
+-- Some references:
+-- - https://en.wikipedia.org/wiki/Functor
+-- - https://en.wikipedia.org/wiki/Category_(mathematics)
+-- - https://en.wikipedia.org/wiki/Homomorphism
+--
+--  class Functor f where
+--    fmap :: (a -> b) -> f a -> f b
+
+instance Functor Maybe' where
+  fmap f (Just' x) = Just' (f x)
+  fmap f Nothing' = Nothing'
+
+instance Functor Tree where
+  fmap f EmptyTree = EmptyTree
+  fmap f (Node x left right) = Node (f x) (fmap f left) (fmap f right)
+
+

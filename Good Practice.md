@@ -29,3 +29,9 @@
   - If maps were defined as `data (Ord k) => Map k v ...`
   - A function like `toList`, which doesn't care whether the keys can be ordered of not would have to be `toList :: (Ord k) => Map k v -> [(k, v)]`
   - Its better practice to specify type constraints when you need them.
+- Type synonyms are useful when you want to give more information about what a type represents in some context; don't go overboard with them, use them to either give more context and thus better, more descriptive function definitions, or when when you have a long type that is repeated a lot.
+- Type synonyms (and types) can only be used in the 'type portion' of Haskell, that is, expressions that deal in type specification, i.e. `data`, `type`, `:: ...`, etc
+- Use `Either` to return a result or an error - we could use `Maybe`, however `Nothing` might not give use much info. Use `Maybe` if there is only one reason why an operation might have failed.
+- Type parameters should be single letters
+- Class constraints in `class` declarations are used to create a typeclass that is a subclass of another typeclass.
+- Class constraints in `instance` delcarations are used to express requirements about type variables.

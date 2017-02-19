@@ -29,3 +29,5 @@
 - The type ctor is before the `=` and value ctors are after `=`, possibly separated by `|`s - they are distinct.
 - We can `read` parameterized types provided that the type is specified, e.g. `read "Just 'a'" :: Maybe Char`.. would not work with `.. :: Maybe a`
 - `Nothing` < `Just a`, when comparing 2 `Just a`s, because `Maybe` derives from `Ord`, Haskell goes to comparing the actual `a` values.
+- `:` is actually a contructor which takes a value and another list and returns a list.
+- Type constructors are just functions which take types as parameters and produce concrete types.
