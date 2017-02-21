@@ -35,3 +35,4 @@
 - Type parameters should be single letters
 - Class constraints in `class` declarations are used to create a typeclass that is a subclass of another typeclass.
 - Class constraints in `instance` delcarations are used to express requirements about type variables.
+- `'` in type names is usually used to denote something similar only slightly changed.

@@ -253,14 +253,14 @@ ifTruthy truthyVal trueBranch falseBranch = if b truthyVal then trueBranch else 
 -- - Mapping a Maybe Char to Maybe Int
 -- - etc
 -- It expects a type constructor with one type parameter, so stuff
--- like Either is out.
+-- like Either requires a little more thought.
 -- Some references:
 -- - https://en.wikipedia.org/wiki/Functor
 -- - https://en.wikipedia.org/wiki/Category_(mathematics)
 -- - https://en.wikipedia.org/wiki/Homomorphism
 --
---  class Functor f where
---    fmap :: (a -> b) -> f a -> f b
+class Functor' f where
+  fmap' :: (a -> b) -> f a -> f b
 
 instance Functor Maybe' where
   fmap f (Just' x) = Just' (f x)
@@ -269,5 +269,63 @@ instance Functor Maybe' where
 instance Functor Tree where
   fmap f EmptyTree = EmptyTree
   fmap f (Node x left right) = Node (f x) (fmap f left) (fmap f right)
+
+-- Because Functor takes a type ctor that takes one type param, we
+-- partially apply Either with a type variable a.
+-- This results in an fmap implementation that takes a function with
+-- its first param of type b, meaning that it can only map the right
+-- hand value.
+-- This fits in with the philosophy of the Left value representing
+-- an empty box with a value in it explaining why its empty and the
+-- right being the actual value.
+instance Functor (Either' a) where
+  fmap f (Right' x) = Right' (f x)
+  fmap f (Left' x) = Left' x
+
+instance (Ord k1) => Functor' (Map.Map k1) where
+  fmap' f = Map.foldrWithKey (\k -> (Map.insert k) . f) Map.empty
+
+-- Probably over complicated..
+
+orderSubtrees :: Ord a => Tree a -> Tree a
+orderSubtrees EmptyTree = EmptyTree
+orderSubtrees (Node x l r) = (Node x (orderTree l) (orderTree r))
+
+swapLeft :: Ord a => Tree a -> Tree a
+swapLeft (Node x (Node y l r) right) = (Node y (orderSubtrees (Node x l r)) (orderSubtrees right))
+
+swapRight :: Ord a => Tree a -> Tree a
+swapRight (Node x left (Node y l r)) = (Node y (orderSubtrees left) (orderSubtrees (Node x l r)))
+
+nodeCompare :: Ord a => Tree a -> Tree a -> Ordering
+nodeCompare _ EmptyTree = EQ
+nodeCompare (Node x _ _) (Node y _ _) = compare x y
+
+orderTree :: Ord a => Tree a -> Tree a
+orderTree EmptyTree = EmptyTree
+orderTree root@(Node x left right)
+  | (nodeCompare root left) == GT   = swapLeft root
+  | (nodeCompare root right) == LT  = swapRight root
+  | otherwise = (Node x (orderSubtrees left) (orderSubtrees right))
+
+-- If it implemented foldable or something...
+--  orderTree2 :: Ord a => Tree a -> Tree a
+--  orderTree2 = foldr treeInsert
+
+-- `a` must be of kind * because we pass it to `j` to produce
+-- a concrete type.
+-- `j` must be of kind * -> * because it takes `a` and produces
+-- a concrete type.
+-- `t` must be of type * -> (* -> *) -> * because it takes a
+-- concrete type `a` and a type constructor which takes a concrete
+-- type and produces a concrete type, `j`, and produces a conrete
+-- type.
+class Tofu t where
+  tofu :: j a -> t a j
+
+data Frank a b = Frank {frankField :: b a } deriving (Show)
+instance Tofu Frank where
+  tofu x = Frank x
+-- Frank { frankField = Just "Test" } -- is of type Frank String Maybe!
 
 
