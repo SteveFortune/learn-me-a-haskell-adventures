@@ -36,3 +36,7 @@
 - Class constraints in `class` declarations are used to create a typeclass that is a subclass of another typeclass.
 - Class constraints in `instance` delcarations are used to express requirements about type variables.
 - `'` in type names is usually used to denote something similar only slightly changed.
+- We usually use `return` to:
+  - Create noop IO actions because we don't want to do anything
+  - Make an IO action that contains a preferable result and return that from a `do` block
+- `mapM` = `((.) sequence . map)` and `mapM_` is the same but throws away the results

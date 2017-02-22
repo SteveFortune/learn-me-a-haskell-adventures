@@ -31,3 +31,6 @@
 - `Nothing` < `Just a`, when comparing 2 `Just a`s, because `Maybe` derives from `Ord`, Haskell goes to comparing the actual `a` values.
 - `:` is actually a contructor which takes a value and another list and returns a list.
 - Type constructors are just functions which take types as parameters and produce concrete types.
+- `when` looks like control flow, but its just a function which takes a bool value and an IO action and if the bool action is false, it returns an noop IO action, else it returns the other IO action!
+- Because functions are lazy in Haskell (i.e. they represent sort of promises that will return when required), `getContents` might read a line into memory when required, so mapping over the results of a `getContents` IO action will actually force it to read the values!
+  - `putStr $ map toUpper someContents` will cause 1 line to be read from stdin and printed to the screen, then when the EOF char is hit (ctrl-D) it will assume the input is done and try mapping the next one, etc.
