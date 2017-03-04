@@ -58,11 +58,14 @@ main5 = do
   putStr $ shortLines input
 -- One-liner: `main = interact $ unlines . filter((<10) . length) . lines`
 
+mapPalindrome :: String -> String
+mapPalindrome str = if isPal str then "Palindrome!" else "Not palindrome"
+  where isPal str = str == reverse str
+
 interactLns :: (String -> String) -> IO ()
 interactLns fn = interact $ unlines . (map fn) . lines
 
-main =  interactLns (\str -> if isPal str then "Palindrome!" else "Not palindrome")
-  where isPal str = str == reverse str
+main =  interactLns mapPalindrome
 
 reverseWords :: String -> String
 reverseWords = unwords . map reverse . words
@@ -73,8 +76,8 @@ reverseWords = unwords . map reverse . words
 putStr' :: String -> IO ()
 putStr' [] = return ()
 putStr' (x:xs) = do
-putChar x
-putStr' xs
+  putChar x
+  putStr' xs
 
 -- print is effectively: putStrLn . show
 -- sequence is of type [IO a] -> IO [a], meaning it takes a list of
