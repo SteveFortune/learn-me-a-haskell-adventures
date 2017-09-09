@@ -44,16 +44,16 @@ third (_, _, z) = z
 addTuples :: (Num a) => [(a, a)] -> [a]
 addTuples xs = [a + b | (a, b) <- xs]
 
--- You can match with the empty list and patterns that 
+-- You can match with the empty list and patterns that
 -- involve :
 
 head3 :: [a] -> (a, a, a)
 head3 [] = error "Empty array"
 head3 (a1:a2:a3:_) = (a1, a2, a3)
 
-tell :: (Show a) => [a] -> String 
+tell :: (Show a) => [a] -> String
 tell [] = error "Empty list, nothing to show"
-tell (x:[]) = "First and only element is " ++ show x 
+tell (x:[]) = "First and only element is " ++ show x
 tell (x:y:[]) = "Second: " ++ show y ++ " and first: " ++ show x
 tell (x:y:_) = "The list is long, but first: " ++ show x ++ " and second: " ++ show y
 
@@ -67,19 +67,22 @@ sum' :: Num b => [b] -> b
 sum' [] = 0
 sum' (x:xs) = x + sum' xs
 
--- 'as pattern' can be used to reference the variable that 
--- you decompose in a pattern 
+-- 'as pattern' can be used to reference the variable that
+-- you decompose in a pattern
 
-capital :: String -> String 
+capital :: String -> String
 capital str@(x:_) = "The first char of " ++ str ++ " is: " ++ [x]
 
 -- Guards
 -- - Nice alternatives for big if/else trees
--- - Expressions that evaulate to bool; unlike pattern matching 
+-- - Expressions that evaulate to bool; unlike pattern matching
 --   which only checks whether a variable satisfied some pattern.
 --   E.g. could do some arithmetic.
+-- If no guard evaluates to true, evaluation falls through to the
+-- next *pattern*.
+-- You can use guards inline, but it'a not very readable.
 
-bmiTell :: RealFloat a => a -> String 
+bmiTell :: RealFloat a => a -> String
 bmiTell bmi
   | bmi <= 18.5 = "You're thin"
   | bmi <= 25.0 = "You're freakishly normal"
@@ -100,29 +103,29 @@ max' a b
   | a > b     = a
   | otherwise = b
 
-compare' :: Ord a => a -> a -> Ordering 
-a `compare'` b 
+compare' :: Ord a => a -> a -> Ordering
+a `compare'` b
   | a > b     = GT
   | a == b    = EQ
   | otherwise = LT
 
-dot :: Char -> String 
+dot :: Char -> String
 dot ch = [ch] ++ ". "
 
 -- Cleaner to define as intials (f:_) (h:_) ... but demonstrates
 -- pattern matching in where
 
 initials :: String -> String -> String
-initials firstname lastname = dot f ++ dot l 
+initials firstname lastname = dot f ++ dot l
   where (f:_) = firstname
         (l:_) = lastname
 
 calcBmis :: RealFloat b => [(b, b)] -> [b]
-calcBmis xs = 
+calcBmis xs =
   [bmi w h | (w, h) <- xs]
   where bmi w h = w / h ^ factor where factor = 2
 
--- Let bindings are similar to where bindings, but let you 
+-- Let bindings are similar to where bindings, but let you
 -- bind variables anywnere are restrict them to their scope.
 -- They are also expressions, so `let <bindings> in <expression>`
 -- evaluates to <expression>
@@ -130,7 +133,7 @@ calcBmis xs =
 --  [let sq x = x * x in (sq 2, sq 4, sq 10)]
 
 cylinderSA :: RealFloat a => a -> a -> a
-cylinderSA r h = 
+cylinderSA r h =
   let sideArea = 2 * pi * r * h
       topArea = pi * r ^ 2
   in sideArea + topArea * 2
@@ -144,7 +147,7 @@ fatPeopleBmis bmis = [bmi | (w,h) <- bmis, let bmi = w / h ^ 2, bmi >= 25.0]
 -- case <expression> of <pattern> -> <result>
 --                      <pattern> -> <result>
 
-describeList :: [a] -> String 
+describeList :: [a] -> String
 describeList xs = "This is a list of " ++ case xs of [] -> "nothing."
                                                      [_] -> "a single item."
                                                      xs -> "lots of items."

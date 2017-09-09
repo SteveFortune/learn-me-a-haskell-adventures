@@ -11,18 +11,18 @@ maximum2 []   = error "Empty list"
 maximum2 [x]  = x
 maximum2 (head:tail) = max head (maximum2 tail)
 
--- In essence, the maximum of a list is the great of the 
+-- In essence, the maximum of a list is the great of the
 -- head and the maximum of the tail
 
 -- Because Num isn't a subclass of Ord, we need to specify
--- both class constraints in the type definition (we're both 
+-- both class constraints in the type definition (we're both
 -- subtracting and comparing)
 replicate' :: (Num i, Ord i) => i -> a -> [a]
-replicate' n a 
+replicate' n a
   | n <= 0    = []
   | otherwise = a:replicate' (n - 1) a
 
--- Note that the first guard without the otherwise falls 
+-- Note that the first guard without the otherwise falls
 -- through to the next pattern if it doesn't match.
 take' :: (Num i, Ord i) => i -> [a] -> [a]
 take' n _
@@ -48,7 +48,7 @@ elem' a (x:xs) = x == a || elem' a xs
 
 quicksort' :: Ord a => [a] -> [a]
 quicksort' []      = []
-quicksort' (x:xs)  = 
+quicksort' (x:xs)  =
   let lowerElms   = quicksort' [a | a <- xs, a <= x]
       higherElms  = quicksort' [a | a <- xs, a > x]
   in  lowerElms ++ [x] ++ higherElms
