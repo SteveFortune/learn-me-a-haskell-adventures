@@ -8,7 +8,7 @@ import Control.Monad
 --    putStrLn "The colours you associated with 1 - 10 are:"
 --    sequence (map putStrLn colours)
 
-main4 = do
+main = do
   colours <- forM [1..10] (\a -> do
     putStrLn $ "What colour do you associate with " ++ show a ++ "?"
     getLine)

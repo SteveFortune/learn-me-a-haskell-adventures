@@ -1,5 +1,6 @@
 import Data.Char
 import Control.Monad
+import IO
 
 -- `return` takes some value and wraps in an IO action.
 -- We use it at the end of the `then` expression with the

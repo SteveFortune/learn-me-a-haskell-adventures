@@ -7,5 +7,5 @@ main = do
   c <- getChar
   when (c /= ' ') $ do
     putChar c
-    main2
+    main
 
