@@ -9,9 +9,12 @@ module MakingOurOwnTypesAndTypeclasses
   , IntMap
   , AssocList
   , Either'
+  , Maybe'
+  , NonEq
   , Tree
   , singleton
   , treeInsert
+  , Equals (..)
   ) where
 
 import qualified Data.Map as Map
@@ -200,6 +203,8 @@ instance Show TrafficLight where
 -- Subclassing is just placing class constraints on class declarations:
 --  class (Eq a) => Num a where ...
 
+data NonEq = A | B;
+
 -- Eq implementation for type constructors - type variable m is
 -- used to denote the type, its like pattern matching on type
 -- constructors with type variables
@@ -209,6 +214,16 @@ instance Eq m => Eq (Maybe' m) where
   Just' x == Just' y = x == y
   Nothing' == Nothing' = True
   _ == _ = False
+
+-- This doesn't work - throws interesting type error. What if I
+-- want to define different instances of a typeclass based on
+-- different concrete evaluations of the same type constructor?
+-- Something to do with the newtype keyword?
+--
+-- instance Eq (Maybe' NonEq) where
+--   Just' _ == Just' _ = False
+--   Nothing' == Nothing' = True
+--   _ == _ = False
 
 -- Class for types that can act as a Bool, e.g. can be truthy
 -- or falsy

@@ -3,8 +3,12 @@
 - Functions in Haskell only take one parameter
 - The space is the function application.
   - E.g. defining `max :: Ord a => a -> a -> a` is equivalent to defining it is `max :: Ord a => a -> (a -> a)`
+  - Has the highest precedence.
   - Curried functions
+- To partially apply minus, `(subtract a)` because `(-a)` is means just negative a.
 - Running `divTen = (/10)` in GCHI throws an error as it returns a function of type `Factional a => a -> a` and functions aren't part of the `Show` typeclass, so haskell doesn't know how to print it.
+- Arrow operator in right-associative.
+- When writing a function, you can omit the type declaration and use GHCI to check what Haskell has inferred the type to be (presumably a beginning techinque).
 - Due to Haskell's lazy evaluation, when mapping and filtering over a list several times, it will only ever be enumerated once
 - Function application with a space is left-associative (`f a b c` = `(((f a) b) c)`) whereas with $ its right-associative (`f $ a $ b $ c` = `(f $ (a $ (b $ c)))`)
 - Function application operator allows us to treat function application like any other function, e.g. mapping application over a list of functions: `map ($ 3) [(4+), (5*), (/6), (^3)]`
@@ -34,3 +38,10 @@
 - `when` looks like control flow, but its just a function which takes a bool value and an IO action and if the bool action is false, it returns an noop IO action, else it returns the other IO action!
 - Because functions are lazy in Haskell (i.e. they represent sort of promises that will return when required), `getContents` might read a line into memory when required, so mapping over the results of a `getContents` IO action will actually force it to read the values!
   - `putStr $ map toUpper someContents` will cause 1 line to be read from stdin and printed to the screen, then when the EOF char is hit (ctrl-D) it will assume the input is done and try mapping the next one, etc.
+- You can't implement custom `deriving` funcitonality. `deriving` behaviour for certain typeclasses such as `Show` and `Eq` is built in to the compiler.
+  - See [here](https://stackoverflow.com/questions/3864647/how-does-deriving-work-in-haskell).
+- Class constraints on:
+  - Typeclass declarations are used to make a typeclass a subclass of some typeclass, i.e. for type `b` to be a `Num`, first it has to equatable, i.e. `Eq`. E.g. if `b` was the type `Int`, in order for `Int` to be an instance of `Num`, you have to be able to compare them.
+  - Instance delcarations are used to denote a requirement for type variables of the type in question to be instances of a particular typeclass themselves, to qualify as instances of the typeclass. E.g. if you wanted to treat `Something b` as equatable it would have to be an instance of `Eq`. It can be an instance of `Eq` without imposing any constraints on `b`, however if you wanted to compare the value of the type variable, that also has to be `Eq`. So, depending on what you're
+    doing with `b` in `instance Eq (Something b)`, you might have to add type constraints.
+  - Poses an interesting question - can you have 2 implementations of `Eq` for a given type, one for types of `b` that aren't `Eq` and one for types that are?
