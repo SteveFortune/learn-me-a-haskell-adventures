@@ -1,11 +1,10 @@
 import System.IO
-
-fileName = "todo.txt"
-promptMessage = "Please enter a todo."
-successMessage = "Your todo has been added."
+import Todo
 
 main = do
   putStrLn promptMessage
   todo <- getLine
-  appendFile fileName (todo ++ "\n")
+  appendFile Todo.filePath (todo ++ "\n")
   putStrLn successMessage
+  where promptMessage = "Please enter a todo."
+        successMessage = "Your todo has been added."
