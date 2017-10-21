@@ -7,7 +7,6 @@ module Todo.Cmds (
 import Todo.IO
 import System.IO
 
-
 loadMyTodos :: IO (TodoList)
 loadMyTodos = do
   todos <- readTodos
