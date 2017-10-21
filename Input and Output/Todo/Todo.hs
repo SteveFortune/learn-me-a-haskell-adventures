@@ -1,38 +1,50 @@
-module Todo
-( filePath
-, getTodos
-, putTodos
+module Todo (
+  TodoList,
+  readTodos,
+  putTodos,
+  appendTodo,
+  deleteTodo,
 ) where
 
+import Data.List
 import System.IO
+import System.Directory
 
-filePath = "todos.txt"
+todoFilePath = "todos.txt"
+currentDir = "."
+tempFileExt = "temp"
 
-type TodoList TodoList
+type TodoList = [String]
 
---
---
-formatTodoContent :: TodoList -> TodoList
-formatTodoContent = unlines . formatTodos . lines
-  where formatTodos :: TodoList -> TodoList
-        formatTodos = zipWith (\n todo) formatTodo
-        formatTodo :: (Integral a) => a -> String -> String
-        formatTodo n = (todoPrefix ++)
-        todoPrefix = n ++ todoSeparator
-        todoSeparator = ". "
+formatTodos :: TodoList -> TodoList
+formatTodos = zipWith formatTodo [1..]
+  where
+    formatTodo :: Int -> String -> String
+    formatTodo n todo =
+      let todoPrefix = (show n) ++ todoSep
+      in todoPrefix ++ todo
+    todoSep = ". "
 
-parseTodoItems :: String -> TodoList
-parseTodoItems = formatTodoItems . lines
+readTodos :: IO TodoList
+readTodos = do
+  fileContent <- readFile todoFilePath
+  return (lines fileContent)
 
-formatTodoContent :: TodoList -> String
-formatTodoContent = unlines
+putTodos :: TodoList -> IO ()
+putTodos todos = do
+  mapM putStrLn $ formatTodos todos
+  return ()
 
-getTodos :: IO TodoList
-getTodos = do
-  fileContent <- readFile filePath
-  return (parseTodoItems fileContent)
+appendTodo :: String -> IO ()
+appendTodo todo = appendFile todoFilePath (todo ++ "\n")
 
-putTodos :: IO ()
-putTodos = do
-  todoContent <- getTodos
-  putStrLn . formatTodoContent $ todoContent
+deleteTodo :: TodoList -> Int -> IO ()
+deleteTodo todos number = do
+  (tempName, tempHandle) <- openTempFile currentDir tempFileExt
+  let newTodos = delete (todos !! todoIndex) todos
+      todoIndex = number - 1
+  hPutStr tempHandle $ unlines newTodos
+  hClose tempHandle
+  removeFile todoFilePath
+  renameFile tempName todoFilePath
+
