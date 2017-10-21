@@ -1,4 +1,4 @@
-module Todo (
+module Todo.IO (
   TodoList,
   readTodos,
   putTodos,
@@ -16,8 +16,9 @@ tempFileExt = "temp"
 
 type TodoList = [String]
 
-formatTodos :: TodoList -> TodoList
-formatTodos = zipWith formatTodo [1..]
+formatTodos :: TodoList -> [String]
+formatTodos [] = ["No todos"]
+formatTodos todos = zipWith formatTodo [1..] todos
   where
     formatTodo :: Int -> String -> String
     formatTodo n todo =
