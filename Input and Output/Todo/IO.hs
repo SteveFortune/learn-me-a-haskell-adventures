@@ -41,9 +41,9 @@ appendTodo todo = appendFile todoFilePath (todo ++ "\n")
 
 deleteTodo :: TodoList -> Int -> IO ()
 deleteTodo todos number = do
-  (tempName, tempHandle) <- openTempFile currentDir tempFileExt
   let newTodos = delete (todos !! todoIndex) todos
       todoIndex = number - listIndxBase
+  (tempName, tempHandle) <- openTempFile currentDir tempFileExt
   hPutStr tempHandle $ unlines newTodos
   hClose tempHandle
   removeFile todoFilePath
