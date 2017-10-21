@@ -1,14 +1,15 @@
-module Todo.IO (
-  TodoList,
-  readTodos,
-  putTodos,
-  appendTodo,
-  deleteTodo,
+module Todo.IO
+( TodoList
+, readTodos
+, putTodos
+, readAndPutTodos
+, appendTodo
+, deleteTodo
 ) where
 
-import Data.List
 import System.IO
 import System.Directory
+import Data.List
 
 todoFilePath = "todos.txt"
 listIndxBase = 1
@@ -35,6 +36,12 @@ putTodos :: TodoList -> IO ()
 putTodos todos = do
   mapM putStrLn $ formatTodos todos
   return ()
+
+readAndPutTodos :: IO TodoList
+readAndPutTodos = do
+  todos <- readTodos
+  putTodos todos
+  return todos
 
 appendTodo :: String -> IO ()
 appendTodo todo = appendFile todoFilePath (todo ++ "\n")

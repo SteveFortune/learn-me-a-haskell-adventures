@@ -1,22 +1,19 @@
-module Todo.Cmds (
-  myTodosCmd,
-  addTodoCmd,
-  deleteTodoCmd,
+module Todo.Cmds
+( TodoCmd
+, listTodosCmd
+, addTodoCmd
+, deleteTodoCmd
 ) where
 
-import Todo.IO
 import System.IO
+import Todo.IO
 
-loadMyTodos :: IO (TodoList)
-loadMyTodos = do
-  todos <- readTodos
-  putTodos todos
-  return todos
+type TodoCmd = [String] -> IO ()
 
-loadMyTodosWithWelcome :: IO (TodoList)
-loadMyTodosWithWelcome = do
+loadTodosWithWelcome :: IO TodoList
+loadTodosWithWelcome = do
   putStrLn welcomeMessage
-  loadMyTodos
+  readAndPutTodos
   where
     welcomeMessage =
       "Welcome to your todo list. The following " ++
@@ -24,31 +21,29 @@ loadMyTodosWithWelcome = do
 
 runTodoCmd :: String -> String -> (TodoList -> IO ()) -> IO ()
 runTodoCmd promptMessage successMessage cmdFn = do
-  todos <- loadMyTodosWithWelcome
+  todos <- loadTodosWithWelcome
   putStrLn promptMessage
   cmdFn todos
   putStrLn successMessage
-  loadMyTodos
+  readAndPutTodos
   return ()
 
-myTodosCmd :: IO ()
-myTodosCmd = do
-  loadMyTodosWithWelcome
+listTodosCmd :: TodoCmd
+listTodosCmd [] = do
+  loadTodosWithWelcome
   return ()
 
-addTodoCmd :: IO ()
-addTodoCmd =
-  runTodoCmd promptMessage successMessage (\todos -> do
-    newTodo <- getLine
+addTodoCmd :: TodoCmd
+addTodoCmd [newTodo] =
+  runTodoCmd promptMessage successMessage (\_ ->
     appendTodo newTodo)
   where
     promptMessage = "Please enter a new todo."
     successMessage = "Your todo has been added:"
 
-deleteTodoCmd :: IO ()
-deleteTodoCmd =
-  runTodoCmd promptMessage successMessage (\todos -> do
-    todoNumber <- getLine
+deleteTodoCmd :: TodoCmd
+deleteTodoCmd [todoNumber] =
+  runTodoCmd promptMessage successMessage (\todos ->
     deleteTodo todos $ read todoNumber)
   where
     promptMessage =
