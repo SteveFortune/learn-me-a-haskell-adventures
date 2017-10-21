@@ -11,15 +11,13 @@ import System.IO
 import System.Directory
 
 todoFilePath = "todos.txt"
-currentDir = "."
-tempFileExt = "temp"
-emptyListMessage = "No todos"
 listNumberOffset = 1
 
 type TodoList = [String]
 
 formatTodos :: TodoList -> [String]
 formatTodos [] = [emptyListMessage]
+  where emptyListMessage = "No todos"
 formatTodos todos = zipWith formatTodo [listNumberOffset..] todos
   where
     formatTodo :: Int -> String -> String
@@ -50,4 +48,6 @@ deleteTodo todos number = do
   hClose tempHandle
   removeFile todoFilePath
   renameFile tempName todoFilePath
-
+  where
+    currentDir = "."
+    tempFileExt = "temp"
