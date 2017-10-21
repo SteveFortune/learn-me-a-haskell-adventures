@@ -11,20 +11,20 @@ import System.IO
 import System.Directory
 
 todoFilePath = "todos.txt"
-listNumberOffset = 1
+listIndxBase = 1
 
 type TodoList = [String]
 
 formatTodos :: TodoList -> [String]
-formatTodos [] = [emptyListMessage]
-  where emptyListMessage = "No todos"
-formatTodos todos = zipWith formatTodo [listNumberOffset..] todos
+formatTodos [] = [emptyMessage]
+  where emptyMessage  = "No todos"
+formatTodos todos = zipWith formatTodo [listIndxBase..] todos
   where
     formatTodo :: Int -> String -> String
     formatTodo n todo =
-      let todoPrefix = (show n) ++ todoSep
+      let todoSep = ". "
+          todoPrefix = (show n) ++ todoSep
       in todoPrefix ++ todo
-    todoSep = ". "
 
 readTodos :: IO TodoList
 readTodos = do
@@ -43,7 +43,7 @@ deleteTodo :: TodoList -> Int -> IO ()
 deleteTodo todos number = do
   (tempName, tempHandle) <- openTempFile currentDir tempFileExt
   let newTodos = delete (todos !! todoIndex) todos
-      todoIndex = number - listNumberOffset
+      todoIndex = number - listIndxBase
   hPutStr tempHandle $ unlines newTodos
   hClose tempHandle
   removeFile todoFilePath
