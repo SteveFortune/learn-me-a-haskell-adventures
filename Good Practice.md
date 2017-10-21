@@ -40,3 +40,5 @@
   - Create noop IO actions because we don't want to do anything
   - Make an IO action that contains a preferable result and return that from a `do` block
 - `mapM` = `((.) sequence . map)` and `mapM_` is the same but throws away the results
+- [This SO answer](https://stackoverflow.com/a/3126668/1454517) makes a good point about constants - that everything in haskell is effectively constant, so defining them is pretty easy.
+- [Interesting doc on indentation from official Haskell wiki](https://en.wikibooks.org/wiki/Haskell/Indentation).

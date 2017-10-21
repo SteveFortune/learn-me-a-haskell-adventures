@@ -45,3 +45,10 @@
   - Instance delcarations are used to denote a requirement for type variables of the type in question to be instances of a particular typeclass themselves, to qualify as instances of the typeclass. E.g. if you wanted to treat `Something b` as equatable it would have to be an instance of `Eq`. It can be an instance of `Eq` without imposing any constraints on `b`, however if you wanted to compare the value of the type variable, that also has to be `Eq`. So, depending on what you're
     doing with `b` in `instance Eq (Something b)`, you might have to add type constraints.
   - Poses an interesting question - can you have 2 implementations of `Eq` for a given type, one for types of `b` that aren't `Eq` and one for types that are?
+- Interesting note about my approach to dropping an element from a list at a particular index. Got it wrong because I didn't research it properly. Analysis:
+  - I wanted to delete an element from a list at the index (1-based) provided by a user.
+  - I read a couple of SO answers ([here](https://stackoverflow.com/a/10256347/1454517) and [here](https://stackoverflow.com/a/1736126/1454517)]) that I thought indicated that the best way to drop an element from a list at a particular index, was to use a combination of `splitAt` and `drop`.
+  - There is a much easier way of doing it: `delete` with `(list !! index)`.
+  - Firstly, the respective SO questions weren't actually asking to meet my specific requirement, so the answers suggested using an approach that had subtly different use cases.
+  - Secondly, I [search Hoogle, which would have yielded this suggestion, had I looked hard enough](https://www.haskell.org/hoogle/?hoogle=delete).
+  - Thirdly, noticed that both SO answers are quite old. I don't think it played a factory in this case, but worth being mindful of older / newer vns of Haskell when looking for stuff like this._
