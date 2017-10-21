@@ -13,12 +13,14 @@ import System.Directory
 todoFilePath = "todos.txt"
 currentDir = "."
 tempFileExt = "temp"
+emptyListMessage = "No todos"
+listNumberOffset = 1
 
 type TodoList = [String]
 
 formatTodos :: TodoList -> [String]
-formatTodos [] = ["No todos"]
-formatTodos todos = zipWith formatTodo [1..] todos
+formatTodos [] = [emptyListMessage]
+formatTodos todos = zipWith formatTodo [listNumberOffset..] todos
   where
     formatTodo :: Int -> String -> String
     formatTodo n todo =
@@ -43,7 +45,7 @@ deleteTodo :: TodoList -> Int -> IO ()
 deleteTodo todos number = do
   (tempName, tempHandle) <- openTempFile currentDir tempFileExt
   let newTodos = delete (todos !! todoIndex) todos
-      todoIndex = number - 1
+      todoIndex = number - listNumberOffset
   hPutStr tempHandle $ unlines newTodos
   hClose tempHandle
   removeFile todoFilePath
