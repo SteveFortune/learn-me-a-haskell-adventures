@@ -1,6 +1,15 @@
 import Data.List
 import Text.Read
 
+-- This is my initial attempt. After reading through the rest of
+-- the section in the chapter, it's clear that there's a much more
+-- eloquent / flexible way of doing it.
+-- This seems to be a bit of a pattern - all of the solutions I've
+-- come up with myself seem to be that bit more complicated than
+-- they need to by. Why?
+-- - Still getting use to a lot of the language features, many of
+--   which I have never seen before. Practice makes perfect etc
+
 type OperatorToken = String
 type Operator = Double -> Double -> Double
 
@@ -28,3 +37,22 @@ parseToken stack token =
                               in (lh `op` rh):xs
                         else stack
         Nothing   -> stack
+
+-- This is the book-provided solution. Much cleaner.
+
+solveRPN' :: String -> Double
+solveRPN' = head . foldl parseToken [] . words
+  where parseToken stack "*" = applyBinaryOp stack (*)
+        parseToken stack "/" = applyBinaryOp stack (/)
+        parseToken stack "+" = applyBinaryOp stack (+)
+        parseToken stack "-" = applyBinaryOp stack (-)
+        parseToken stack "^" = applyBinaryOp stack (**)
+        parseToken stack "ln" = applyUnaryOp stack log
+        parseToken stack "sum" = [sum stack]
+        parseToken stack numberString =
+          case (readMaybe numberString :: Maybe Double) of
+            Just number   -> number:stack
+            Nothing       -> stack
+        applyBinaryOp (rh:lh:xs) op = (lh `op` rh):xs
+        applyUnaryOp (o:xs) op = (op o):xs
+
