@@ -39,6 +39,10 @@ parseToken stack token =
         Nothing   -> stack
 
 -- This is the book-provided solution. Much cleaner.
+-- Why?
+-- - Can define operators of any arity, not restricted to
+--   binary.
+-- - Less code - does the same thing in a more concise way.
 
 solveRPN' :: String -> Double
 solveRPN' = head . foldl parseToken [] . words
@@ -54,5 +58,7 @@ solveRPN' = head . foldl parseToken [] . words
             Just number   -> number:stack
             Nothing       -> stack
         applyBinaryOp (rh:lh:xs) op = (lh `op` rh):xs
+        applyBinaryOp xs op = xs
         applyUnaryOp (o:xs) op = (op o):xs
+        applyUnaryOp xs op = xs
 
